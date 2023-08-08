@@ -48,4 +48,4 @@ const VendorSchema = new Schema(
   }
 );
 
-export const Vendor = mongoose.model("vendor", VendorSchema);
+export const Vendor = mongoose.model<VendorDoc>("vendor", VendorSchema);
