@@ -19,7 +19,7 @@ app.use("/vendor", vendorRouter);
 
 // connnect database
 
-app.listen(8000, () => {
+app.listen(8080, () => {
   console.clear();
-  console.log("App is listening to port 8000");
+  console.log("App is listening to port 8080");
 });
