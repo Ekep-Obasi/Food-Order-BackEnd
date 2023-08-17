@@ -1,9 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { EditVendorInputs, LoginVendorInputs } from "../dto";
+import { CreateFoodInput, EditVendorInputs, LoginVendorInputs } from "../dto";
 import { FindVendor } from "./AdminController";
 import { GenerateToken, ValidatePassword } from "../utility";
-import { Vendor } from "../models";
-
+import { Food } from "../models";
 
 export const VendorLogin = async (req:Request, res:Response, next:NextFunction) => {
   
@@ -31,7 +30,7 @@ export const VendorLogin = async (req:Request, res:Response, next:NextFunction) 
     }
   }
 
-  res.json({ message: "Login credentials not valid"});
+  return res.json({ message: "Login credentials not valid"});
 }
 
 export const GetVendorProfile = async (req:Request, res:Response, next:NextFunction) => {
@@ -86,6 +85,59 @@ export const UpdateVendorService = async (req:Request, res:Response, next:NextFu
         const updatedVendorService = await existingVendor.save();
 
         return res.json(updatedVendorService);
+      }
+
+      return  res.json(existingVendor);
+    }
+
+    return res.json({ message: "Vendor information not found"});
+}
+
+export const AddFood = async (req:Request, res:Response, next:NextFunction) => {
+  
+  const user = req.user;
+  const { name, description, category, foodType, readyTime, price } = <CreateFoodInput>req.body;
+
+    if(user) {
+
+      const vendor = await FindVendor(user._id);
+
+      if( vendor !== null ) {
+
+        const createdFood = await Food.create({
+          vendorID: vendor._id,
+          name, 
+          description, 
+          category, 
+          foodType,
+          images: ['node.jpeg'],
+          readyTime, 
+          price,
+          rating: 0,
+          food: []
+        });
+
+        vendor.food.push(createdFood)
+        
+       const updatedVendor = await vendor.save();
+
+        res.json(updatedVendor);
+      }
+
+    }
+
+    return res.json({ message: "Vendor information not found"});
+}
+
+export const GetFood = async (req:Request, res:Response, next:NextFunction) => {
+  
+  const user = req.user;
+
+    if(user) {
+      const existingVendor = await FindVendor(user._id);
+
+      if(existingVendor !== null) {
+
       }
 
       return  res.json(existingVendor);
